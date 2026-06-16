@@ -1,0 +1,41 @@
+name: PassportPlugin
+version: '${project.version}'
+main: dev.passport.PassportPlugin
+api-version: '1.21'
+load: POSTWORLD
+description: Паспортная система для РП-сервера
+authors: [ Benovich ]
+
+softdepend:
+  - LuckPerms
+  - PermissionsEx
+
+commands:
+  passport:
+    description: Открыть и управлять паспортом
+    usage: |-
+      /passport — открыть свой паспорт
+      /passport <игрок> — открыть паспорт другого игрока
+      /passport set <поле> <игрок> <значение> — редактировать поле
+      /passport give [игрок] — выдать предмет-паспорт
+      /passport reload — перезагрузить config.yml
+    aliases: [ pass, pasport ]
+    permission: passport.use
+
+permissions:
+  passport.use:
+    description: Открыть свой паспорт
+    default: true
+  passport.view:
+    description: Смотреть паспорта других игроков
+    default: op
+  passport.edit:
+    description: Редактировать данные паспортов
+    default: op
+  passport.admin:
+    description: Полный доступ к паспортной системе
+    default: op
+    children:
+      passport.use: true
+      passport.view: true
+      passport.edit: true

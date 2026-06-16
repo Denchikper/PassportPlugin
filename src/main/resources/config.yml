@@ -1,0 +1,37 @@
+# ============================================================
+#  PassportPlugin — конфигурация
+#  Все тексты поддерживают MiniMessage (https://docs.advntr.dev/minimessage/)
+# ============================================================
+
+# Настройки предмета-паспорта
+item:
+  # Материал предмета
+  material: PAPER
+  # CustomModelData для ресурспака (0 = выключено)
+  custom-model-data: 1001
+  # Название предмета (MiniMessage)
+  name: "<gold><bold>Паспорт</bold></gold>"
+  # Описание предмета (lore)
+  lore:
+    - "<gray>Документ, удостоверяющий личность.</gray>"
+    - "<yellow>ПКМ</yellow><gray>, чтобы открыть.</gray>"
+
+# Настройки GUI
+gui:
+  # Заголовок инвентаря (MiniMessage). {player} — РП-имя или ник владельца
+  title: "<dark_aqua>Паспорт — {player}</dark_aqua>"
+
+# Тексты сообщений (MiniMessage). Префикс подставляется автоматически.
+messages:
+  prefix: "<gray>[</gray><gold>Паспорт</gold><gray>]</gray> "
+  no-permission: "<red>У вас нет прав для этого действия.</red>"
+  player-only: "<red>Эту команду может выполнять только игрок.</red>"
+  player-not-found: "<red>Игрок <white>{player}</white> не найден.</red>"
+  no-passport: "<red>У игрока <white>{player}</white> ещё нет паспорта.</red>"
+  reloaded: "<green>Конфигурация перезагружена.</green>"
+  given: "<green>Паспорт выдан игроку <white>{player}</white>.</green>"
+  given-self: "<green>Вы получили паспорт.</green>"
+  inventory-full: "<red>Инвентарь игрока <white>{player}</white> заполнен.</red>"
+  field-updated: "<green>Поле <white>{field}</white> игрока <white>{player}</white> обновлено на: <white>{value}</white></green>"
+  unknown-field: "<red>Неизвестное поле: <white>{field}</white>. Доступные: {fields}</red>"
+  usage: "<yellow>Использование: <white>{usage}</white></yellow>"
