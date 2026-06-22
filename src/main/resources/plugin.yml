@@ -1,7 +1,7 @@
-name: PassportPlugin
+name: CitizenPass
 version: '${project.version}'
 main: dev.passport.PassportPlugin
-api-version: '1.21'
+api-version: '1.16'
 load: POSTWORLD
 description: Паспортная система для РП-сервера
 authors: [ Benovich ]

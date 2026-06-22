@@ -2,10 +2,7 @@ package dev.passport.gui;
 
 import dev.passport.PassportPlugin;
 import dev.passport.model.PassportData;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import dev.passport.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -17,13 +14,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Строит и открывает GUI паспорта — инвентарь на 54 слота.
  * <p>
  * Голова владельца используется как «фото», остальные слоты — иконки полей.
- * Все тексты формируются через MiniMessage.
+ * Все тексты раскрашиваются через {@link TextUtil} (поддержка {@code &}-кодов,
+ * hex и градиентов).
  */
 public class PassportGUI {
 
@@ -40,7 +39,6 @@ public class PassportGUI {
     private static final int SLOT_SPOUSE = 33;
 
     private final PassportPlugin plugin;
-    private final MiniMessage mm = MiniMessage.miniMessage();
 
     public PassportGUI(PassportPlugin plugin) {
         this.plugin = plugin;
@@ -54,12 +52,12 @@ public class PassportGUI {
      * @param data   данные паспорта
      */
     public void open(Player viewer, OfflinePlayer owner, PassportData data) {
-        String ownerName = !data.getRpName().isBlank()
+        String ownerName = !isBlank(data.getRpName())
                 ? data.getRpName()
                 : (owner.getName() != null ? owner.getName() : "???");
 
-        String rawTitle = plugin.getConfig().getString("gui.title", "<dark_aqua>Паспорт — {player}</dark_aqua>");
-        Component title = deserialize(rawTitle.replace("{player}", ownerName));
+        String rawTitle = plugin.getConfig().getString("gui.title", "&3Паспорт — {player}");
+        String title = TextUtil.colorize(rawTitle.replace("{player}", ownerName));
 
         PassportHolder holder = new PassportHolder(owner);
         Inventory inv = Bukkit.createInventory(holder, SIZE, title);
@@ -76,19 +74,19 @@ public class PassportGUI {
 
         // Иконки полей.
         inv.setItem(SLOT_RP_NAME, buildField(Material.NAME_TAG,
-                "<gold>РП-имя</gold>", data.getRpName()));
+                "&6РП-имя", data.getRpName()));
         inv.setItem(SLOT_BIRTH_DATE, buildField(Material.CLOCK,
-                "<gold>Дата рождения</gold>", data.getBirthDate()));
+                "&6Дата рождения", data.getBirthDate()));
         inv.setItem(SLOT_BIRTH_PLACE, buildField(Material.FILLED_MAP,
-                "<gold>Место рождения</gold>", data.getBirthPlace()));
+                "&6Место рождения", data.getBirthPlace()));
         inv.setItem(SLOT_MARITAL, buildField(Material.GOLDEN_APPLE,
-                "<gold>Семейное положение</gold>", data.getMaritalStatus()));
+                "&6Семейное положение", data.getMaritalStatus()));
         inv.setItem(SLOT_PROFESSION, buildField(Material.IRON_PICKAXE,
-                "<gold>Профессия</gold>", data.getProfession()));
+                "&6Профессия", data.getProfession()));
         inv.setItem(SLOT_CITIZENSHIP, buildField(Material.OAK_SIGN,
-                "<gold>Гражданство</gold>", data.getCitizenship()));
+                "&6Гражданство", data.getCitizenship()));
         inv.setItem(SLOT_SPOUSE, buildField(Material.POPPY,
-                "<gold>Супруг(а)</gold>", data.getSpouseName()));
+                "&6Супруг(а)", data.getSpouseName()));
 
         viewer.openInventory(inv);
     }
@@ -96,12 +94,12 @@ public class PassportGUI {
     private ItemStack buildPhoto(OfflinePlayer owner, String ownerName) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta meta = head.getItemMeta();
-        if (meta instanceof SkullMeta skullMeta) {
+        if (meta instanceof SkullMeta) {
+            SkullMeta skullMeta = (SkullMeta) meta;
             skullMeta.setOwningPlayer(owner);
-            skullMeta.displayName(deserialize("<aqua><bold>" + escape(ownerName) + "</bold></aqua>"));
-            List<Component> lore = new ArrayList<>();
-            lore.add(deserialize("<gray>Фотография владельца</gray>"));
-            skullMeta.lore(lore);
+            skullMeta.setDisplayName(TextUtil.colorize("&b&l" + ownerName));
+            skullMeta.setLore(Collections.singletonList(
+                    TextUtil.colorize("&7Фотография владельца")));
             head.setItemMeta(skullMeta);
         }
         return head;
@@ -111,12 +109,14 @@ public class PassportGUI {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(deserialize(label));
+        meta.setDisplayName(TextUtil.colorize(label));
 
-        List<Component> lore = new ArrayList<>();
-        String shown = (value == null || value.isBlank()) ? "<dark_gray><i>не указано</i></dark_gray>" : "<white>" + escape(value) + "</white>";
-        lore.add(deserialize(shown));
-        meta.lore(lore);
+        String shown = isBlank(value)
+                ? "&8не указано"
+                : "&f" + value;
+        List<String> lore = new ArrayList<>();
+        lore.add(TextUtil.colorize(shown));
+        meta.setLore(lore);
 
         item.setItemMeta(meta);
         return item;
@@ -125,22 +125,14 @@ public class PassportGUI {
     private ItemStack buildFiller() {
         ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = item.getItemMeta();
-        // Пустое непрозрачное имя, чтобы не показывать «glass pane».
-        meta.displayName(Component.empty().decoration(TextDecoration.ITALIC, false));
+        // Пустое имя (один пробел), чтобы не показывать «glass pane».
+        meta.setDisplayName(" ");
         item.setItemMeta(meta);
         return item;
     }
 
-    private Component deserialize(String miniMessage) {
-        // По умолчанию отключаем курсив, характерный для имён предметов.
-        return mm.deserialize(miniMessage).decoration(TextDecoration.ITALIC, false);
-    }
-
-    /**
-     * Экранирует пользовательский текст, чтобы он не интерпретировался как теги MiniMessage.
-     */
-    private String escape(String input) {
-        return mm.escapeTags(input);
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
     /**

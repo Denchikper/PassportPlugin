@@ -65,18 +65,16 @@ public class DatabaseManager {
     }
 
     private void createTable() throws SQLException {
-        String sql = """
-                CREATE TABLE IF NOT EXISTS passports (
-                    uuid           TEXT PRIMARY KEY,
-                    rp_name        TEXT NOT NULL DEFAULT '',
-                    birth_date     TEXT NOT NULL DEFAULT '',
-                    birth_place    TEXT NOT NULL DEFAULT '',
-                    marital_status TEXT NOT NULL DEFAULT '',
-                    profession     TEXT NOT NULL DEFAULT '',
-                    citizenship    TEXT NOT NULL DEFAULT '',
-                    spouse_name    TEXT NOT NULL DEFAULT ''
-                )
-                """;
+        String sql = "CREATE TABLE IF NOT EXISTS passports ("
+                + "uuid           TEXT PRIMARY KEY,"
+                + "rp_name        TEXT NOT NULL DEFAULT '',"
+                + "birth_date     TEXT NOT NULL DEFAULT '',"
+                + "birth_place    TEXT NOT NULL DEFAULT '',"
+                + "marital_status TEXT NOT NULL DEFAULT '',"
+                + "profession     TEXT NOT NULL DEFAULT '',"
+                + "citizenship    TEXT NOT NULL DEFAULT '',"
+                + "spouse_name    TEXT NOT NULL DEFAULT ''"
+                + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
@@ -143,19 +141,17 @@ public class DatabaseManager {
      * @param data данные паспорта
      */
     public void savePassport(PassportData data) {
-        String sql = """
-                INSERT INTO passports
-                    (uuid, rp_name, birth_date, birth_place, marital_status, profession, citizenship, spouse_name)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(uuid) DO UPDATE SET
-                    rp_name        = excluded.rp_name,
-                    birth_date     = excluded.birth_date,
-                    birth_place    = excluded.birth_place,
-                    marital_status = excluded.marital_status,
-                    profession     = excluded.profession,
-                    citizenship    = excluded.citizenship,
-                    spouse_name    = excluded.spouse_name
-                """;
+        String sql = "INSERT INTO passports "
+                + "(uuid, rp_name, birth_date, birth_place, marital_status, profession, citizenship, spouse_name) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+                + "ON CONFLICT(uuid) DO UPDATE SET "
+                + "rp_name        = excluded.rp_name,"
+                + "birth_date     = excluded.birth_date,"
+                + "birth_place    = excluded.birth_place,"
+                + "marital_status = excluded.marital_status,"
+                + "profession     = excluded.profession,"
+                + "citizenship    = excluded.citizenship,"
+                + "spouse_name    = excluded.spouse_name";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, data.getUuid().toString());
             statement.setString(2, data.getRpName());

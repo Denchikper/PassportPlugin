@@ -5,8 +5,7 @@ import dev.passport.command.PassportCommand;
 import dev.passport.database.DatabaseManager;
 import dev.passport.gui.PassportGUI;
 import dev.passport.listener.PassportItemListener;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import dev.passport.util.TextUtil;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,8 +17,6 @@ import java.sql.SQLException;
  * Отвечает за инициализацию базы данных, GUI, команд, слушателей и публичного API.
  */
 public final class PassportPlugin extends JavaPlugin {
-
-    private final MiniMessage miniMessage = MiniMessage.miniMessage();
 
     private DatabaseManager databaseManager;
     private PassportGUI passportGUI;
@@ -86,21 +83,20 @@ public final class PassportPlugin extends JavaPlugin {
      * @param key          ключ сообщения (без {@code messages.})
      * @param replacements пары вида {@code "ключ", "значение", ...}
      *                     для подстановки {@code {ключ}} в тексте
-     * @return готовый к отправке {@link Component}
+     * @return готовая к отправке строка с цветовыми кодами
      */
-    public Component message(String key, String... replacements) {
+    public String message(String key, String... replacements) {
         String prefix = getConfig().getString("messages.prefix", "");
         String raw = getConfig().getString("messages." + key, key);
 
-        // Подстановка плейсхолдеров вида {name} простой заменой строк,
-        // чтобы пользовательские значения не интерпретировались как MiniMessage-теги.
+        // Подстановка плейсхолдеров вида {name} простой заменой строк.
         if (replacements.length > 0) {
             for (int i = 0; i + 1 < replacements.length; i += 2) {
                 raw = raw.replace("{" + replacements[i] + "}",
-                        miniMessage.escapeTags(String.valueOf(replacements[i + 1])));
+                        String.valueOf(replacements[i + 1]));
             }
         }
 
-        return miniMessage.deserialize(prefix + raw);
+        return TextUtil.colorize(prefix + raw);
     }
 }

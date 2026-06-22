@@ -5,16 +5,30 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.passport</groupId>
-    <artifactId>PassportPlugin</artifactId>
+    <artifactId>CitizenPass</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>PassportPlugin</name>
-    <description>Паспортная система для РП-сервера на PaperMC 1.21.4</description>
+    <name>CitizenPass</name>
+    <description>Паспортная система для РП-серверов Minecraft (1.16.5–1.21.x)</description>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Daniel Benovich</name>
+        </developer>
+    </developers>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.release>21</maven.compiler.release>
+        <java.version>8</java.version>
+        <maven.compiler.release>8</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -26,11 +40,13 @@
     </repositories>
 
     <dependencies>
-        <!-- Paper API -->
+        <!-- Paper API 1.16.5 — компилируемся против самой ранней поддерживаемой
+             версии; используются только классы org.bukkit.*, поэтому jar
+             совместим с серверами 1.16.5–1.21.x (Paper, Spigot, Purpur). -->
         <dependency>
-            <groupId>io.papermc.paper</groupId>
+            <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

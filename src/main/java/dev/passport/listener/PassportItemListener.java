@@ -3,9 +3,7 @@ package dev.passport.listener;
 import dev.passport.PassportPlugin;
 import dev.passport.gui.PassportGUI;
 import dev.passport.model.PassportData;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import dev.passport.util.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -29,8 +27,6 @@ import java.util.List;
  * и защищает GUI паспорта от перемещения предметов.
  */
 public class PassportItemListener implements Listener {
-
-    private static final MiniMessage MM = MiniMessage.miniMessage();
 
     private final PassportPlugin plugin;
     private final NamespacedKey passportKey;
@@ -56,16 +52,16 @@ public class PassportItemListener implements Listener {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
-        String name = plugin.getConfig().getString("item.name", "<gold><bold>Паспорт</bold></gold>");
-        meta.displayName(MM.deserialize(name).decoration(TextDecoration.ITALIC, false));
+        String name = plugin.getConfig().getString("item.name", "&6&lПаспорт");
+        meta.setDisplayName(TextUtil.colorize(name));
 
         List<String> rawLore = plugin.getConfig().getStringList("item.lore");
         if (!rawLore.isEmpty()) {
-            List<Component> lore = new ArrayList<>();
+            List<String> lore = new ArrayList<>();
             for (String line : rawLore) {
-                lore.add(MM.deserialize(line).decoration(TextDecoration.ITALIC, false));
+                lore.add(TextUtil.colorize(line));
             }
-            meta.lore(lore);
+            meta.setLore(lore);
         }
 
         int cmd = plugin.getConfig().getInt("item.custom-model-data", 0);

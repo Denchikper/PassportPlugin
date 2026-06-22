@@ -56,21 +56,49 @@ public class PassportCommand implements CommandExecutor, TabCompleter {
 
         String sub = args[0].toLowerCase(Locale.ROOT);
         switch (sub) {
-            case "reload" -> handleReload(sender);
-            case "give" -> handleGive(sender, args);
-            case "set" -> handleSet(sender, args);
-            default -> handleView(sender, args[0]);
+            case "help":
+                handleHelp(sender);
+                break;
+            case "reload":
+                handleReload(sender);
+                break;
+            case "give":
+                handleGive(sender, args);
+                break;
+            case "set":
+                handleSet(sender, args);
+                break;
+            default:
+                handleView(sender, args[0]);
+                break;
         }
         return true;
     }
 
     // ----- Подкоманды -------------------------------------------------------
 
+    private void handleHelp(CommandSender sender) {
+        sender.sendMessage(plugin.message("help-header"));
+        sender.sendMessage(plugin.message("help-self"));
+        if (sender.hasPermission("passport.view")) {
+            sender.sendMessage(plugin.message("help-view"));
+        }
+        if (sender.hasPermission("passport.edit")) {
+            sender.sendMessage(plugin.message("help-set"));
+        }
+        if (sender.hasPermission("passport.admin")) {
+            sender.sendMessage(plugin.message("help-give"));
+            sender.sendMessage(plugin.message("help-reload"));
+        }
+        sender.sendMessage(plugin.message("help-help"));
+    }
+
     private void handleSelf(CommandSender sender) {
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.message("player-only"));
             return;
         }
+        Player player = (Player) sender;
         if (!player.hasPermission("passport.use")) {
             player.sendMessage(plugin.message("no-permission"));
             return;
@@ -80,10 +108,11 @@ public class PassportCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleView(CommandSender sender, String targetName) {
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.message("player-only"));
             return;
         }
+        Player player = (Player) sender;
         if (!player.hasPermission("passport.view")) {
             player.sendMessage(plugin.message("no-permission"));
             return;
@@ -125,8 +154,8 @@ public class PassportCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(plugin.message("player-not-found", "player", args[1]));
                 return;
             }
-        } else if (sender instanceof Player player) {
-            target = player;
+        } else if (sender instanceof Player) {
+            target = (Player) sender;
         } else {
             sender.sendMessage(plugin.message("usage", "usage", "/passport give <игрок>"));
             return;
@@ -209,7 +238,13 @@ public class PassportCommand implements CommandExecutor, TabCompleter {
         if (online != null) {
             return online;
         }
-        return Bukkit.getOfflinePlayerIfCached(name);
+        // Среди уже известных серверу игроков (без блокирующего обращения к Mojang).
+        for (OfflinePlayer cached : Bukkit.getOfflinePlayers()) {
+            if (name.equalsIgnoreCase(cached.getName())) {
+                return cached;
+            }
+        }
+        return null;
     }
 
     // ----- Tab-комплит ------------------------------------------------------
@@ -220,6 +255,7 @@ public class PassportCommand implements CommandExecutor, TabCompleter {
         List<String> suggestions = new ArrayList<>();
 
         if (args.length == 1) {
+            suggestions.add("help");
             if (sender.hasPermission("passport.admin")) {
                 suggestions.add("give");
                 suggestions.add("reload");

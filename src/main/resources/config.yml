@@ -1,6 +1,11 @@
 # ============================================================
-#  PassportPlugin — конфигурация
-#  Все тексты поддерживают MiniMessage (https://docs.advntr.dev/minimessage/)
+#  CitizenPass — конфигурация
+#
+#  Форматирование текста:
+#    &a, &c, &l, &o, &r ...   — обычные цвета и стили
+#    &#ff8800                 — hex-цвет (один цвет, работает с 1.16+)
+#    <gradient:#ff0000:#0000ff>текст</gradient>
+#                             — градиент между двумя hex-цветами по буквам
 # ============================================================
 
 # Настройки предмета-паспорта
@@ -9,29 +14,36 @@ item:
   material: PAPER
   # CustomModelData для ресурспака (0 = выключено)
   custom-model-data: 1001
-  # Название предмета (MiniMessage)
-  name: "<gold><bold>Паспорт</bold></gold>"
+  # Название предмета
+  name: "<gradient:#ffd700:#ff8c00>Паспорт</gradient>"
   # Описание предмета (lore)
   lore:
-    - "<gray>Документ, удостоверяющий личность.</gray>"
-    - "<yellow>ПКМ</yellow><gray>, чтобы открыть.</gray>"
+    - "&7Документ, удостоверяющий личность."
+    - "&eПКМ&7, чтобы открыть."
 
 # Настройки GUI
 gui:
-  # Заголовок инвентаря (MiniMessage). {player} — РП-имя или ник владельца
-  title: "<dark_aqua>Паспорт — {player}</dark_aqua>"
+  # Заголовок инвентаря. {player} — РП-имя или ник владельца
+  title: "&3Паспорт — {player}"
 
-# Тексты сообщений (MiniMessage). Префикс подставляется автоматически.
+# Тексты сообщений. Префикс подставляется автоматически.
 messages:
-  prefix: "<gray>[</gray><gold>Паспорт</gold><gray>]</gray> "
-  no-permission: "<red>У вас нет прав для этого действия.</red>"
-  player-only: "<red>Эту команду может выполнять только игрок.</red>"
-  player-not-found: "<red>Игрок <white>{player}</white> не найден.</red>"
-  no-passport: "<red>У игрока <white>{player}</white> ещё нет паспорта.</red>"
-  reloaded: "<green>Конфигурация перезагружена.</green>"
-  given: "<green>Паспорт выдан игроку <white>{player}</white>.</green>"
-  given-self: "<green>Вы получили паспорт.</green>"
-  inventory-full: "<red>Инвентарь игрока <white>{player}</white> заполнен.</red>"
-  field-updated: "<green>Поле <white>{field}</white> игрока <white>{player}</white> обновлено на: <white>{value}</white></green>"
-  unknown-field: "<red>Неизвестное поле: <white>{field}</white>. Доступные: {fields}</red>"
-  usage: "<yellow>Использование: <white>{usage}</white></yellow>"
+  prefix: "&8[<gradient:#ffd700:#ff8c00>Паспорт</gradient>&8] &r"
+  no-permission: "&cУ вас нет прав для этого действия."
+  player-only: "&cЭту команду может выполнять только игрок."
+  player-not-found: "&cИгрок &f{player}&c не найден."
+  no-passport: "&cУ игрока &f{player}&c ещё нет паспорта."
+  reloaded: "&aКонфигурация перезагружена."
+  given: "&aПаспорт выдан игроку &f{player}&a."
+  given-self: "&aВы получили паспорт."
+  inventory-full: "&cИнвентарь игрока &f{player}&c заполнен."
+  field-updated: "&aПоле &f{field}&a игрока &f{player}&a обновлено на: &f{value}"
+  unknown-field: "&cНеизвестное поле: &f{field}&c. Доступные: {fields}"
+  usage: "&eИспользование: &f{usage}"
+  help-header: "<gradient:#ffd700:#ff8c00>Команды паспорта</gradient>"
+  help-self: "&e/passport &7— открыть свой паспорт"
+  help-view: "&e/passport <игрок> &7— посмотреть чужой паспорт"
+  help-set: "&e/passport set <поле> <игрок> <значение> &7— изменить данные"
+  help-give: "&e/passport give [игрок] &7— выдать предмет-паспорт"
+  help-reload: "&e/passport reload &7— перезагрузить конфигурацию"
+  help-help: "&e/passport help &7— показать этот список"
